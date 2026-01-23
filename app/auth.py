@@ -1,8 +1,7 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends, Header
 from passlib.context import CryptContext
 from cryptography.fernet import Fernet
 import base64
-
 from app.models import UserCreate, UserLogin, User
 from app.database import load_users, save_users
 
@@ -44,3 +43,18 @@ def login_user(credentials: UserLogin) -> dict:
         "username": user.username,
         "user_key": user.encrypted_user_key
     }
+
+def get_current_username(x_username: str = Header(None)):
+    if not x_username:
+        raise HTTPException(status_code=401, detail="Требуется заголовок X-Username")
+    users = load_users()
+    if not any(u.username == x_username for u in users):
+        raise HTTPException(status_code=401, detail="Пользователь не найден")
+    return x_username
+
+def get_user_key(username: str = Depends(get_current_username)) -> str:
+    users = load_users()
+    user = next((u for u in users if u.username == username), None)
+    if not user:
+        raise HTTPException(status_code=401, detail="Пользователь не найден")
+    return user.encrypted_user_key

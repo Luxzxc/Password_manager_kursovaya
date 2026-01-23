@@ -1,0 +1,6 @@
+body { font-family: sans-serif; margin: 2rem; }
+h1   { color: #2c3e50; }
+form { max-width: 380px; }
+input, button { display: block; width: 100%; margin: 0.6rem 0; padding: 0.5rem; }
+button { background: #2980b9; color: white; border: none; cursor: pointer; }
+button:hover { background: #1f6391; }
