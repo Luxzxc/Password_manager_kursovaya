@@ -1,24 +1,19 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+import json
+import os
+from app.models import User
 
-# SQLite файл будет создан автоматически в той же папке
-SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
+DATA_FILE = "users.json"
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}  # важно для SQLite в многопотоке
-)
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
-
-# Зависимость для получения сессии БД в эндпоинтах
-def get_db():
-    db = SessionLocal()
+def load_users() -> list[User]:
+    if not os.path.exists(DATA_FILE):
+        return []
     try:
-        yield db
-    finally:
-        db.close()
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return [User(**item) for item in data]
+    except:
+        return []
+
+def save_users(users: list[User]):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump([u.model_dump() for u in users], f, ensure_ascii=False, indent=2)
