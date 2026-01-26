@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 420px;
+            margin: 80px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin: 12px 0 4px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #357abd;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Регистрация</h1>
+
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
+
+<form method="post">
+    <label>Логин</label>
+    <input type="text" name="username" required minlength="3" maxlength="50">
+
+    <label>Пароль</label>
+    <input type="password" name="password" required minlength="8">
+
+    <button type="submit">Создать аккаунт</button>
+</form>
+
+<div class="footer">
+    Уже есть аккаунт? <a href="/">Войти</a>
+</div>
+
+</body>
+</html>

@@ -3,5 +3,15 @@
     "username": "str",
     "hashed_password": "$2b$12$MzdlUug9/4JTP0eWwVC/bOGGhF0vSdTujeGuKjWxH0fVEpDxFtVA2",
     "encrypted_user_key": "anpSWThubGRNckFGY1k4WUJfb04xQlcxbUc5akRDbGE4QjBlQlFabDg5Yz0="
+  },
+  {
+    "username": "admin",
+    "hashed_password": "$2b$12$vlbq/6qN9JSPh5Y6FF/yFOXN/oD8eL6Nusuhe68qKyZoack5XIoM.",
+    "encrypted_user_key": "clN4LU1nTlJNc1FFbWpMN015WVVLZGpDMjF2ZGVaT1I3eDVBQkVZbmRGcz0="
+  },
+  {
+    "username": "admin1",
+    "hashed_password": "$2b$12$ekqxe3rbFxRVUmrJimm6JeWencCSaJ6Slr6LCmBoYp4g2Cmr89DDm",
+    "encrypted_user_key": "aTNFYXBzUE41cmx5bHZlMThGdFN0OHVKdGZ2ZXFWNWhnUmVac1I3SGhlZz0="
   }
 ]

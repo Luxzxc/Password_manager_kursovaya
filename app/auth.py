@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status, Depends, Header
+from fastapi import HTTPException, status, Depends, Header, Request
 from passlib.context import CryptContext
 from cryptography.fernet import Fernet
 import base64
@@ -7,7 +7,7 @@ from app.database import load_users, save_users
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def register_user(user: UserCreate) -> dict:
+def register_user(user:UserCreate) -> dict:
     users = load_users()
 
     if any(u.username == user.username for u in users):
@@ -44,13 +44,13 @@ def login_user(credentials: UserLogin) -> dict:
         "user_key": user.encrypted_user_key
     }
 
-def get_current_username(x_username: str = Header(None)):
-    if not x_username:
+def get_current_username(X_Username: str = Header(None)):
+    if not X_Username:
         raise HTTPException(status_code=401, detail="Требуется заголовок X-Username")
     users = load_users()
-    if not any(u.username == x_username for u in users):
+    if not any(u.username == X_Username for u in users):
         raise HTTPException(status_code=401, detail="Пользователь не найден")
-    return x_username
+    return X_Username
 
 def get_user_key(username: str = Depends(get_current_username)) -> str:
     users = load_users()
@@ -58,3 +58,14 @@ def get_user_key(username: str = Depends(get_current_username)) -> str:
     if not user:
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user.encrypted_user_key
+
+# def get_current_username_from_cookie(request: Request) -> str:
+#     username = request.cookies.get("X-Username")
+#     if not username:
+#         raise HTTPException(401, "Необходима авторизация")
+    
+#     users = load_users()
+#     if not any(u.username == username for u in users):
+#         raise HTTPException(401, "Пользователь не найден")
+    
+#     return username

@@ -1,4 +1,4 @@
-body { font-family: sans-serif; margin: 2rem; }
+body { font-family: sans-serif; margin: 2rem; background-color: #0000;}
 h1   { color: #2c3e50; }
 form { max-width: 380px; }
 input, button { display: block; width: 100%; margin: 0.6rem 0; padding: 0.5rem; }

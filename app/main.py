@@ -1,16 +1,22 @@
-from fastapi import FastAPI, Request, Form, HTTPException, status
+from fastapi import FastAPI, Request, Form, HTTPException, status, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from app.auth import login_user, register_user, get_current_username, get_user_key
+import app.models
 from app.models import UserCreate, UserLogin
 from app.passwords import router as passwords_router, load_records
+from app.database import load_users
+from datetime import datetime
+from app.passwords import encrypt, get_all_records
+from app.database import save_records
+from app.middleware import AuthMiddleware
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="C:/Users/Игорь/Desktop/pass/venv/app/static"), name="static")
 templates = Jinja2Templates(directory="C:/Users/Игорь/Desktop/pass/venv/app/templates")
-
+app.add_middleware(AuthMiddleware)
 app.include_router(passwords_router)
 
 
@@ -26,10 +32,8 @@ async def process_login(
 ):
     try:
         result = login_user(UserLogin(username=username, password=password))
-        # Сохраняем в cookie (очень упрощённо, для курсовой пойдёт)
         response = RedirectResponse(url="/passwords", status_code=303)
         response.set_cookie(key="X-Username", value=username, httponly=True)
-        # В реальном проекте лучше JWT в cookie
         return response
     except HTTPException as e:
         return templates.TemplateResponse(
@@ -39,17 +43,34 @@ async def process_login(
         )
 
 
+# @app.get("/passwords", response_class=HTMLResponse)
+# async def show_passwords(request: Request):
+#     # Получаем username из cookie
+#     username = request.cookies.get("X-Username")
+#     if not username:
+#         return RedirectResponse(url="/", status_code=303)
+
+#     # Проверяем, что пользователь реально существует
+#     try:
+#         current_user = get_current_username(username)  # выбросит 401, если проблемы
+#     except HTTPException:
+#         return RedirectResponse(url="/", status_code=303)
+
+#     # ← Вот где используем функцию из passwords.py
+#     # Она уже фильтрует по текущему пользователю и возвращает List[PasswordRecordOut]
+#     user_records = list_all(username=username)
+#     return templates.TemplateResponse(
+#         "passwords.html",
+#         {
+#             "request": request,
+#             "username": current_user,
+#             "records": user_records      # теперь это объекты PasswordRecordOut
+#         }
+#     )
+
 @app.get("/passwords", response_class=HTMLResponse)
 async def show_passwords(request: Request):
-    username = request.cookies.get("X-Username")
-    if not username:
-        return RedirectResponse(url="/", status_code=303)
-
-    try:
-        # Проверяем существование пользователя (можно улучшить)
-        _ = get_current_username(username)  # выбросит 401 если нет
-    except HTTPException:
-        return RedirectResponse(url="/", status_code=303)
+    username = request.state.username           # ← берём из middleware
 
     records = load_records()
     user_records = [r for r in records if r["username"] == username]
@@ -63,9 +84,6 @@ async def show_passwords(request: Request):
         }
     )
 
-@app.post("/register", status_code=201)
-def api_register(user: UserCreate):
-    return register_user(user)
 
 
 @app.get("/logout")
@@ -73,6 +91,29 @@ async def logout():
     response = RedirectResponse(url="/")
     response.delete_cookie("X-Username")
     return response
+
+@app.get("/register", response_class=HTMLResponse)
+def show_register(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request, "error": None})
+
+
+@app.post("/register", response_class=HTMLResponse)
+def process_register(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...)
+):
+    try:
+        register_user(UserCreate(username=username, password=password))
+        # сразу логиним после успешной регистрации
+        response = RedirectResponse(url="/passwords", status_code=303)
+        response.set_cookie(key="X-Username", value=username, httponly=True, max_age=86400)
+        return response
+    except HTTPException as e:
+        return templates.TemplateResponse("register.html", {
+            "request": request,
+            "error": e.detail
+        }, status_code=e.status_code)
 
 
 if __name__ == "__main__":
