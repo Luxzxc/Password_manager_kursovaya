@@ -75,7 +75,7 @@ A basic web-based password manager built with FastAPI. This application allows u
 
 3. **API Usage** (for developers):
    - API docs available at `/docs` (Swagger UI).
-   - Endpoints like `/passwords/` (GET all), `/passwords/{id}` (GET one), etc.
+   - Endpoints like `/passwords/` (GET all), `/passwords/{record_id}` (GET one), etc.
    - Authentication via `X-Username` cookie (set on login).
 
 4. **Example Workflow**:
