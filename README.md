@@ -41,8 +41,8 @@ A basic web-based password manager built with FastAPI. This application allows u
 
 1. **Clone the Repository**:
    ```
-   git clone https://github.com/yourusername/simple-password-manager.git
-   cd simple-password-manager
+   git clone https://github.com/Luxzxc/Password_manager_kursovaya.git
+   cd Password_manager_kursovaya
    ```
 
 2. **Set Up Virtual Environment**:
@@ -95,10 +95,3 @@ A basic web-based password manager built with FastAPI. This application allows u
   - No HTTPS – deploy with SSL in production.
   - For real-world use, migrate to a proper database (e.g., PostgreSQL) and add more security features.
 
-## Contributing
-
-Feel free to fork and submit pull requests. Improvements could include:
-- Switching to a real database (SQLAlchemy integration).
-- Adding two-factor authentication.
-- Improving UI with CSS/JS frameworks.
-- Error handling and logging enhancements.
