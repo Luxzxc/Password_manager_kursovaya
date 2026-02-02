@@ -14,9 +14,10 @@ from app.database import save_records
 from app.middleware import AuthMiddleware
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="C:/Users/Игорь/Desktop/pass/venv/app/static"), name="static")
-templates = Jinja2Templates(directory="C:/Users/Игорь/Desktop/pass/venv/app/templates")
 app.add_middleware(AuthMiddleware)
+app.mount("/static", StaticFiles(directory="venv/app/static"), name="static")
+templates = Jinja2Templates(directory="venv/app/templates")
+
 app.include_router(passwords_router)
 
 
@@ -43,34 +44,9 @@ async def process_login(
         )
 
 
-# @app.get("/passwords", response_class=HTMLResponse)
-# async def show_passwords(request: Request):
-#     # Получаем username из cookie
-#     username = request.cookies.get("X-Username")
-#     if not username:
-#         return RedirectResponse(url="/", status_code=303)
-
-#     # Проверяем, что пользователь реально существует
-#     try:
-#         current_user = get_current_username(username)  # выбросит 401, если проблемы
-#     except HTTPException:
-#         return RedirectResponse(url="/", status_code=303)
-
-#     # ← Вот где используем функцию из passwords.py
-#     # Она уже фильтрует по текущему пользователю и возвращает List[PasswordRecordOut]
-#     user_records = list_all(username=username)
-#     return templates.TemplateResponse(
-#         "passwords.html",
-#         {
-#             "request": request,
-#             "username": current_user,
-#             "records": user_records      # теперь это объекты PasswordRecordOut
-#         }
-#     )
-
 @app.get("/passwords", response_class=HTMLResponse)
 async def show_passwords(request: Request):
-    username = request.state.username           # ← берём из middleware
+    username = request.state.username
 
     records = load_records()
     user_records = [r for r in records if r["username"] == username]
@@ -83,7 +59,6 @@ async def show_passwords(request: Request):
             "records": user_records
         }
     )
-
 
 
 @app.get("/logout")

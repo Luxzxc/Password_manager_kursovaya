@@ -58,14 +58,3 @@ def get_user_key(username: str = Depends(get_current_username)) -> str:
     if not user:
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user.encrypted_user_key
-
-# def get_current_username_from_cookie(request: Request) -> str:
-#     username = request.cookies.get("X-Username")
-#     if not username:
-#         raise HTTPException(401, "Необходима авторизация")
-    
-#     users = load_users()
-#     if not any(u.username == username for u in users):
-#         raise HTTPException(401, "Пользователь не найден")
-    
-#     return username
